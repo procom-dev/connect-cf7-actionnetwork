@@ -27,6 +27,13 @@ if ( ! function_exists( 'dd' ) && cftz_activated_debug_functions() ) {
     }
 }
 
+function cf7an_dd( $param, $include_pre = true ) {
+    echo $include_pre ? '<pre>' : '';
+    print_r( $param );
+    echo $include_pre ? '</pre>' : '';
+    exit;
+}
+
 /**
  * Emulate dump function from
  * laravel but write to logs
@@ -35,5 +42,9 @@ if ( ! function_exists( 'dump' ) && cftz_activated_debug_functions() ) {
     function dump( $param ) {
         error_log( $param );
     }
+}
+
+function cf7an_dump( $param ) {
+    error_log( $param );
 }
 

@@ -83,11 +83,11 @@ if ( is_a( $contactform, 'WPCF7_ContactForm' ) ) {
                     </p>
                     <?php if ( $activate && empty( $hook_url ) ): ?>
                         <p class="description" style="color: #D00;">
-                            <?php esc_html_e( 'You have to enter an ActionNetwork API Endpoint' ); ?>
+                            <?php esc_html_e('You have to enter an ActionNetwork API Endpoint', 'connect-cf7-actionnetwork'); ?>
                         </p>
                     <?php endif; ?>
                     <p class="description">
-                            <?php esc_html_e( 'Each action (Form, Petition...) has its own API Endpoint URL. You can find it at the bottom of the right sidebar when managing the action.' ); ?>
+                            <?php esc_html_e( 'Each action (Form, Petition...) has its own API Endpoint URL. You can find it at the bottom of the right sidebar when managing the action.', 'connect-cf7-actionnetwork' ); ?>
                         </p>
                 </td>
             </tr>
@@ -108,6 +108,7 @@ if ( is_a( $contactform, 'WPCF7_ContactForm' ) ) {
             </tr>
         </tbody>
     </table>
+    <?php wp_nonce_field( 'cf7an_save_contact_form', 'cf7an_nonce' ); ?>
 </fieldset>
 
 <h2>

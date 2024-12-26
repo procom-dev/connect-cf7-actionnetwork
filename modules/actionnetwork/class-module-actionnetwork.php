@@ -46,7 +46,7 @@ if ( ! class_exists( 'CFTZ_Module_ActionNetwork' ) ) {
          * @access   private
          */
         private function define_hooks() {
-            $this->core->add_action( 'ctz_trigger_actionnetwork', array( $this, 'pull_the_trigger' ), 10, 5 );
+            add_filter( 'ctz_trigger_actionnetwork', array( $this, 'pull_the_trigger' ), 10, 5 );
         }
 
         /**
@@ -124,6 +124,12 @@ if ( ! class_exists( 'CFTZ_Module_ActionNetwork' ) ) {
              * @since    1.4.0
              */
             do_action( 'ctz_post_request_result', $result, $hook_url );
+
+            // New filters and actions
+            apply_filters('cf7an_ignore_default_actionnetwork', false);
+            apply_filters('cf7an_hook_url', $hook_url, $data);
+            apply_filters('cf7an_post_request_args', $args, $properties, $contact_form);
+            do_action('cf7an_post_request_result', $result, $hook_url);
         }
 
         /**

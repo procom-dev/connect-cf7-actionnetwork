@@ -53,16 +53,16 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
          * @access   private
          */
         private function define_hooks() {
-            $this->core->add_filter( 'wpcf7_editor_panels', [ $this, 'wpcf7_editor_panels' ] );
-            $this->core->add_action( 'wpcf7_save_contact_form', [ $this, 'wpcf7_save_contact_form' ] );
-            $this->core->add_filter( 'wpcf7_skip_mail', [ $this, 'wpcf7_skip_mail' ], 10, 2 );
-            $this->core->add_action( 'wpcf7_mail_sent', [ $this, 'wpcf7_mail_sent' ], 10, 1 );
+            $this->core->add_filter( 'wpcf7_editor_panels', __CLASS__ . '::wpcf7_editor_panels' );
+            $this->core->add_action( 'wpcf7_save_contact_form', __CLASS__ . '::wpcf7_save_contact_form' );
+            $this->core->add_filter( 'wpcf7_skip_mail', __CLASS__ . '::wpcf7_skip_mail', 10, 2 );
+            $this->core->add_action( 'wpcf7_mail_sent', __CLASS__ . '::wpcf7_mail_sent', 10, 1 );
 
-            $this->core->add_filter( 'wpcf7_contact_form_properties', array( $this, 'wpcf7_contact_form_properties' ), 10, 2 );
-            $this->core->add_filter( 'wpcf7_pre_construct_contact_form_properties', array( $this, 'wpcf7_contact_form_properties' ), 10, 2 );
+            $this->core->add_filter( 'wpcf7_contact_form_properties', 'wpcf7_contact_form_properties', 10, 2 );
+            $this->core->add_filter( 'wpcf7_pre_construct_contact_form_properties', __CLASS__ . '::wpcf7_contact_form_properties', 10, 2 );
 
             // Admin Hooks
-            $this->core->add_action( 'admin_notices', [ $this, 'check_cf7_plugin' ] );
+            $this->core->add_action( 'admin_notices', __CLASS__ . '::check_cf7_plugin' );
         }
 
         /**
@@ -134,6 +134,14 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
         public function wpcf7_save_contact_form( $contact_form ) {
             $new_properties = [];
 
+            if ( ! isset( $_POST['cf7an_nonce'] ) || ! wp_verify_nonce( $_POST['cf7an_nonce'], 'cf7an_save_contact_form' ) ) {
+                return;
+            }
+
+            if ( ! current_user_can( 'edit_post', $contact_form->id() ) ) {
+                return;
+            }
+
             if ( isset( $_POST['ctz-actionnetwork-activate'] ) && $_POST['ctz-actionnetwork-activate'] == '1' ) {
                 $new_properties[ 'activate' ] = '1';
             } else {
@@ -141,8 +149,9 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
             }
 
             if ( isset( $_POST['ctz-actionnetwork-hook-url'] ) ) {
+                $hook_urls_raw = sanitize_textarea_field( wp_unslash( $_POST['ctz-actionnetwork-hook-url'] ) );
 				// Unslash the POST data first
-				$hook_urls_raw = wp_unslash( $_POST['ctz-actionnetwork-hook-url'] ); // Unslash once before processing
+				$hook_urls_raw = sanitize_textarea_field( wp_unslash( $_POST['ctz-actionnetwork-hook-url'] ) ); // Unslash once before processing
 
 				// Process each URL, removing placeholders and sanitizing
 				$hook_urls = array_filter( array_map( function( $hook_url ) {
@@ -291,7 +300,7 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
                          *
                          * @since 3.0.0
                          */
-                        $value =  apply_filters( 'ctz_hook_url_placeholder', urlencode( $value ), $placeholder, $key, $data );
+                        $value =  apply_filters( 'cf7an_hook_url_placeholder', urlencode( $value ), $placeholder, $key, $data );
 
                         $hook_url = str_replace( $placeholder, $value, $hook_url );
                     }
@@ -382,7 +391,7 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
                      * @since  1.0.0
                      */
                     
-                    do_action( 'ctz_trigger_actionnetwork', $data, $hook_url, $properties, $contact_form );
+                    do_action( 'cf7an_trigger_actionnetwork', $data, $hook_url, $properties, $contact_form );
                 } catch (Exception $exception) {
                     $errors[] = array(
                         'actionnetwork'   => $hook_url,
@@ -400,7 +409,7 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
                      *
                      * @since 1.4.0
                      */
-                    $error_message =  apply_filters( 'ctz_trigger_actionnetwork_error_message', $contact_form->message( 'mail_sent_ng' ), $exception );
+                    $error_message =  apply_filters( 'cf7an_trigger_actionnetwork_error_message', $contact_form->message( 'mail_sent_ng' ), $exception );
 
                     // If empty ignore
                     if ( empty( $error_message ) ) continue;
@@ -424,7 +433,7 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
              *
              * @since  2.4.0
              */
-            do_action( 'ctz_trigger_actionnetwork_errors', $errors, $contact_form );
+            do_action( 'cf7an_trigger_actionnetwork_errors', $errors, $contact_form );
         }
 
         /**
@@ -546,7 +555,7 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
              * @param $data             Array 'field => data'
              * @param $contact_form     ContactForm obj from 'wpcf7_mail_sent' action
              */
-            return apply_filters( 'ctz_get_data_from_contact_form', $data, $contact_form );
+            return apply_filters( 'cf7an_get_data_from_contact_form', $data, $contact_form );
         }
 
         /**
@@ -572,11 +581,11 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
 
                 // Support to "_raw_" values. @see WPCF7_MailTag::__construct()
                 if ( $mail_tag->get_option( 'do_not_heat' ) ) {
-                    $value = apply_filters( 'wpcf7_special_mail_tags', '', $mail_tag->tag_name(), false, $mail_tag );
+                    $value = apply_filters( 'cf7an_special_mail_tags', '', $mail_tag->tag_name(), false, $mail_tag );
                     $value = sanitize_text_field( wp_unslash( $_POST[ $mail_tag->field_name() ] ?? '' ) );
                 }
 
-                $value = apply_filters( 'wpcf7_special_mail_tags', $value, $mail_tag->tag_name(), false, $mail_tag );
+                $value = apply_filters( 'cf7an_special_mail_tags', $value, $mail_tag->tag_name(), false, $mail_tag );
                 $data[ $key ] = $value;
             }
 
@@ -586,7 +595,7 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
              * @param $data             Array 'field => data'
              * @param $contact_form     ContactForm obj from 'wpcf7_mail_sent' action
              */
-            return apply_filters( 'ctz_get_data_from_special_mail_tags', $data, $contact_form );
+            return apply_filters( 'cf7an_get_data_from_special_mail_tags', $data, $contact_form );
         }
 
         /**

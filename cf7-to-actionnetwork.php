@@ -79,7 +79,7 @@ if ( ! class_exists( 'Cf7_To_ActionNetwork' ) ) {
          */
         private function define_hooks() {
             // Internationalization
-            $this->add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
+            add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
 
             // Activation Hook
             register_activation_hook( __FILE__, array( $this, 'on_activation' ) );
