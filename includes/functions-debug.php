@@ -47,8 +47,3 @@ if ( ! function_exists( 'dump' ) && cftz_activated_debug_functions() ) {
         error_log( $param );
     }
 }
-
-function cf7an_dump( $param ) {
-    error_log( $param );
-}
-
