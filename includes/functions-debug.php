@@ -34,6 +34,10 @@ function cf7an_dd( $param, $include_pre = true ) {
     exit;
 }
 
+function cf7an_dump( $param ) {
+    error_log( $param );
+}
+
 /**
  * Emulate dump function from
  * laravel but write to logs
