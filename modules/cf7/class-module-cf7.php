@@ -72,7 +72,7 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
          * @since    1.0.0
          * @access   private
          */
-        public function check_cf7_plugin() {
+        public static function check_cf7_plugin() {
             if ( ! current_user_can( 'activate_plugins' ) ) {
                 return;
             }
@@ -82,7 +82,7 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
             }
 
             echo '<div class="notice notice-error is-dismissible">';
-            echo '<p>' . sprintf(esc_html__( "You need to install/activate %1\$s Contact Form 7%2\$s plugin to use %3\$s CF7 to ActionNetwork %4\$s", 'cf7-actionnetwork' ),'<a href="' . esc_url( 'http://contactform7.com/' ) . '" target="_blank">','</a>','<strong>','</strong>') . '</p>';
+            echo '<p>' . sprintf(esc_html__( "You need to install/activate %1\$s Contact Form 7%2\$s plugin to use %3\$s CF7 to ActionNetwork %4\$s", 'connect-cf7-actionnetwork' ),'<a href="' . esc_url( 'http://contactform7.com/' ) . '" target="_blank">','</a>','<strong>','</strong>') . '</p>';
 
             $screen = get_current_screen();
             if ( $screen->id == 'plugins' ) {
@@ -96,7 +96,7 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
                 $url = 'plugin-install.php?tab=search&s=Contact+form+7';
             }
 
-            echo '<p><a href="' . esc_url( admin_url( $url ) ) . '">' . esc_html__( "Do it now?", 'cf7-actionnetwork' ) . '</a></p>';
+            echo '<p><a href="' . esc_url( admin_url( $url ) ) . '">' . esc_html__( "Do it now?", 'connect-cf7-actionnetwork' ) . '</a></p>';
             echo '</div>';
         }
 
