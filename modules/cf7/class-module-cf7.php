@@ -14,6 +14,8 @@ defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
     class CFTZ_Module_CF7 {
 
+        public static function wpcf7_contact_form_properties( $properties, $contact_form ) {
+
         /**
          * The Core object
          *
@@ -60,6 +62,7 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
 
             $this->core->add_filter( 'wpcf7_contact_form_properties', 'wpcf7_contact_form_properties', 10, 2 );
             $this->core->add_filter( 'wpcf7_pre_construct_contact_form_properties', __CLASS__ . '::wpcf7_contact_form_properties', 10, 2 );
+            $this->core->add_filter('wpcf7_pre_construct_contact_form_properties', array('CFTZ_Module_CF7', 'wpcf7_contact_form_properties'), 10, 2);
 
             // Admin Hooks
             $this->core->add_action( 'admin_notices', __CLASS__ . '::check_cf7_plugin' );
@@ -680,3 +683,5 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
 
 // Ensure the method is called on an instance of the class
 add_action('admin_notices', array('CFTZ_Module_CF7', 'check_cf7_plugin'));
+
+}
