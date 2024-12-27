@@ -20,9 +20,9 @@
 // If this file is called directly, call the cops.
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
-if ( ! class_exists( 'Cf7an_To_ActionNetwork' ) ) {
+if ( ! class_exists( 'Cf7_To_ActionNetwork' ) ) {
 
-    class Cf7an_To_ActionNetwork {
+    class Cf7_To_ActionNetwork {
 
         /**
          * The array of actions registered with WordPress.
@@ -217,5 +217,5 @@ if ( ! class_exists( 'Cf7an_To_ActionNetwork' ) ) {
 /**
  * Making things happening
  */
-$ctz_core = new Cf7an_To_ActionNetwork();
+$ctz_core = new Cf7_To_ActionNetwork();
 $ctz_core->run();

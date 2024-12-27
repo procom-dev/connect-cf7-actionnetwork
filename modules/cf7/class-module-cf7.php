@@ -679,4 +679,4 @@ if ( ! class_exists( 'CFTZ_Module_CF7' ) ) {
 }
 
 // Ensure the method is called on an instance of the class
-add_action('admin_notices', array($this->modules['cf7'], 'check_cf7_plugin'));
+add_action('admin_notices', array('CFTZ_Module_CF7', 'check_cf7_plugin'));
